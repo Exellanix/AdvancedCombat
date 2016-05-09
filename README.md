@@ -1,2 +1,2 @@
 # AdvancedCombat
-The plugin the handles most of the actual combat for ExellPvP
+The plugin that handles most of the actual combat for ExellPvP
