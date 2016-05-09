@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="AdvancedCombat">
+    <output-path>$PROJECT_DIR$/out/artifacts/AdvancedCombat</output-path>
+    <root id="archive" name="AdvancedCombat.jar">
+      <element id="module-output" name="AdvancedCombat" />
+    </root>
+  </artifact>
+</component>
