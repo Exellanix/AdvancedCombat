@@ -8,8 +8,6 @@
   <component name="ChangeListManager">
     <list default="true" id="3d72a843-3070-45c2-b5e5-4f0a5e138747" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/io/github/exellanix/advancedcombat/AdvancedCombat.java" afterPath="$PROJECT_DIR$/src/io/github/exellanix/advancedcombat/AdvancedCombat.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/plugin.yml" afterPath="$PROJECT_DIR$/src/plugin.yml" />
     </list>
     <ignored path="AdvancedCombat.iws" />
     <ignored path=".idea/workspace.xml" />
