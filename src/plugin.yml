@@ -2,3 +2,14 @@ name: AdvancedCombat
 main: io.github.exellanix.advancedcombat.AdvancedCombat
 description: The plugin that handles most of the actual combat for ExellPvP.
 version: 0.3.0
+depends: [KitPvP]
+commands:
+  advancedcombat:
+    description: Show all commands for AdvancedCombat
+    usage: /<command>
+    aliases: [ac]
+permissions:
+  advancedcombat.command:
+    default: op
+  advancedcombat.reload:
+    default: op

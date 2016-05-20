@@ -1,5 +1,6 @@
 package io.github.exellanix.advancedcombat;
 
+import io.github.exellanix.advancedcombat.commands.AdvancedCombat_Command;
 import io.github.exellanix.advancedcombat.listeners.AntiKS;
 import io.github.exellanix.advancedcombat.listeners.CombatTagEventCaller;
 import io.github.exellanix.advancedcombat.listeners.Tag;
@@ -32,27 +33,6 @@ public class AdvancedCombat extends JavaPlugin {
         registerCommands();
         singleton = this;
 
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new BukkitRunnable()
-        {
-            public void run()
-            {
-                if (AntiKS.counter.size() >= 1) {
-                    for (UUID ids : AntiKS.entityTracker.keySet())
-                    {
-                        Player players = Bukkit.getPlayer(ids);
-                        if (AntiKS.counter.containsKey(players.getUniqueId()))
-                        {
-                            Integer i = Integer.valueOf(AntiKS.getAmount(players));
-                            AntiKS.counter.put(players.getUniqueId(), Integer.valueOf(i.intValue() - 1));
-                            if (AntiKS.getAmount(players) == 0) {
-                                AntiKS.removePlayer(players);
-                            }
-                        }
-                    }
-                }
-            }
-        }, 0L, 20L);
-
         logger.info(pdfFile.getName() + " has been enabled! (V." + pdfFile.getVersion());
     }
 
@@ -66,6 +46,7 @@ public class AdvancedCombat extends JavaPlugin {
     }
 
     public void registerCommands() {
+        getCommand("advancedcombat").setExecutor(new AdvancedCombat_Command());
     }
 
     public void registerEvents() {

@@ -1,78 +1,77 @@
 package io.github.exellanix.advancedcombat.listeners;
 
 import io.github.exellanix.advancedcombat.AdvancedCombat;
+import io.github.exellanix.advancedcombat.util.DamageTracker;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerKickEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
 
 /**
  * Created by Brendan on 5/15/2016.
  */
+
 public class AntiKS implements Listener {
 
-    public static final HashMap<UUID, UUID> entityTracker = new HashMap();
-    public static final HashMap<UUID, Integer> counter = new HashMap();
+    private HashMap<Player, DamageTracker> damage = new HashMap<>();
 
-    public static void removePlayer(Player p)
-    {
-        counter.remove(p.getUniqueId());
-        entityTracker.remove(p.getUniqueId());
-    }
-
-    public static int getAmount(Player p)
-    {
-        return ((Integer)counter.get(p.getUniqueId())).intValue();
-    }
-
-    @EventHandler
-    public void onEntityDamageByEntityEvent(EntityDamageByEntityEvent e)
-    {
-        Entity ent = e.getEntity();
-        Entity damager = e.getDamager();
-        if ((damager instanceof Player))
-        {
-            Player p = (Player)damager;
-            if (this.entityTracker.containsKey(p.getUniqueId()))
-            {
-                if (((UUID)this.entityTracker.get(p.getUniqueId())).equals(ent.getUniqueId())) {
-                    this.counter.put(p.getUniqueId(), Integer.valueOf(10));
-                } else {
-                    e.setCancelled(true);
+    public AntiKS() {
+        AdvancedCombat.getSingleton().getServer().getScheduler().runTaskTimer(AdvancedCombat.getSingleton(), new BukkitRunnable() {
+            @Override
+            public void run() {
+                for(Player p : Bukkit.getOnlinePlayers()) {
+                    damage.get(p).decrementCooldown();
                 }
             }
-            else if ((!this.entityTracker.containsKey(p.getUniqueId())) && (!this.entityTracker.containsValue(ent.getUniqueId())))
-            {
-                this.entityTracker.put(p.getUniqueId(), ent.getUniqueId());
-                this.counter.put(p.getUniqueId(), Integer.valueOf(10));
-            }
-            else if ((!this.entityTracker.containsKey(p.getUniqueId())) && (this.entityTracker.containsValue(ent.getUniqueId())))
-            {
-                e.setCancelled(true);
+        }, 0, 20);
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onDamage(EntityDamageByEntityEvent event) {
+        if(event.getDamager() instanceof Player && event.getEntity() instanceof Player) {
+            if(event.getEntity() != event.getDamager()) {
+                if(!event.isCancelled()) {
+                    damage.get(event.getEntity()).takeDamage((Player) event.getDamager(), event.getFinalDamage());
+                }
             }
         }
     }
 
     @EventHandler
-    public void onEntityDeathEvent(EntityDeathEvent e)
-    {
-        Entity ent = e.getEntity();
-        if ((e.getEntity().getKiller() instanceof Player))
-        {
-            Player killer = e.getEntity().getKiller();
-            if (this.entityTracker.containsValue(ent.getUniqueId()))
-            {
-                this.entityTracker.remove(killer.getUniqueId());
-                this.counter.remove(killer.getUniqueId());
+    public void onJoin(PlayerJoinEvent event) {
+        damage.put(event.getPlayer(), new DamageTracker());
+    }
+
+    @EventHandler
+    public void onQuit(PlayerQuitEvent event) {
+        damage.remove(event.getPlayer());
+    }
+
+    @EventHandler
+    public void onKick(PlayerKickEvent event) {
+        damage.remove(event.getPlayer());
+    }
+
+    @EventHandler
+    public void onDeath(PlayerDeathEvent event) {
+        if(damage.get(event.getEntity()).getCooldown() > 0) {
+            Player killer = damage.get(event.getEntity()).getKiller();
+            if(killer != null) {
+                //TODO give killer money
+
+                //TODO make death messages in another death event
+
             }
         }
+        damage.get(event.getEntity()).resetCooldown();
     }
 }
